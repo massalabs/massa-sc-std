@@ -1,19 +1,34 @@
 {
-  "name": "massa-sc-std",
-  "version": "3.2.2",
-  "repository": "https://github.com/massalabs/massa-sc-std",
-  "types": "assembly/index.ts",
-  "ascMain": "assembly/index.ts",
-  "author": "Massa Labs <info@massa.net>",
-  "private": false,
-  "devDependencies": {
-    "assemblyscript": "^0.19.20",
-    "jest": "^27.4.5"
-  },
-  "dependencies": {
-    "assemblyscript-json": "^1.1.0"
-  },
-  "scripts": {
-      "test": "asc assembly/index.ts"
-  }
+    "name": "massa-sc-std",
+    "version": "4.0.0",
+    "repository": "https://github.com/massalabs/massa-sc-std",
+    "types": "assembly/index.ts",
+    "ascMain": "assembly/index.ts",
+    "author": "Massa Labs <info@massa.net>",
+    "contributors": ["Grégory Libert <greg_libert@yahoo.fr> "],
+    "private": false,
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.29.0",
+        "@typescript-eslint/parser": "^5.29.0",
+        "assemblyscript": "^0.19.20",
+        "eslint": "^8.18.0",
+        "eslint-config-google": "^0.14.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "jest": "^27.4.5",
+        "prettier": "^2.7.1",
+        "typescript": "^4.7.4"
+    },
+    "dependencies": {
+        "assemblyscript-json": "^1.1.0",
+        "mscl-type": "https://gitpkg.now.sh/massalabs/massa-sc-library/type?main"
+    },
+    "scripts": {
+        "test": "asc assembly/index.ts",
+        "fmt": "prettier --write '{*,**/*}.{js,ts,jsx,tsx,json}'",
+        "lint:fix": "eslint --fix --ext .ts .",
+        "lint": "eslint --ext .ts . && prettier --check '{*,**/*}.{js,ts,jsx,tsx,json}'"
+    },
+    "main": "assembly/index.ts",
+    "license": "MIT"
 }

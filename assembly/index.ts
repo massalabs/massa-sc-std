@@ -1,474 +1,225 @@
-import { JSON } from "assemblyscript-json";
-
-@external("massa", "assembly_script_print")
-export declare function assembly_script_print(message: string): void
-@external("massa", "assembly_script_call")
-export declare function assembly_script_call(address: string, func: string, param: string, call_coins: u64): string
-@external("massa", "assembly_script_get_remaining_gas")
-export declare function assembly_script_get_remaining_gas(): u64
-@external("massa", "assembly_script_create_sc")
-export declare function assembly_script_create_sc(bytecode: string): string
-@external("massa", "assembly_script_set_data")
-export declare function assembly_script_set_data(key: string, value: string): void;
-@external("massa", "assembly_script_set_data_for")
-export declare function assembly_script_set_data_for(address: string, key: string, value: string): void;
-@external("massa", "assembly_script_get_data")
-export declare function assembly_script_get_data(key: string): string;
-@external("massa", "assembly_script_get_data_for")
-export declare function assembly_script_get_data_for(address: string, key: string): string;
-@external("massa", "assembly_script_delete_data")
-export declare function assembly_script_delete_data(key: string): void
-@external("massa", "assembly_script_delete_data_for")
-export declare function assembly_script_delete_data_for(address: string, key: string): void
-@external("massa", "assembly_script_append_data")
-export declare function assembly_script_append_data(key: string, value: string): void
-@external("massa", "assembly_script_append_data_for")
-export declare function assembly_script_append_data_for(address: string, key: string, value: string): void
-@external("massa", "assembly_script_has_data")
-export declare function assembly_script_has_data(key: string): bool;
-@external("massa", "assembly_script_has_data_for")
-export declare function assembly_script_has_data_for(address: string, key: string): bool;
-@external("massa", "assembly_script_get_owned_addresses")
-export declare function assembly_script_get_owned_addresses(): string;
-@external("massa", "assembly_script_get_call_stack")
-export declare function assembly_script_get_call_stack(): string;
-@external("massa", "assembly_script_generate_event")
-export declare function assembly_script_generate_event(event: string): void;
-@external("massa", "assembly_script_transfer_coins")
-export declare function assembly_script_transfer_coins(to_address: string, raw_amount: u64): void;
-@external("massa", "assembly_script_transfer_coins_for")
-export declare function assembly_script_transfer_coins_for(from_address: string, to_address: string, raw_amount: u64): void;
-@external("massa", "assembly_script_get_balance")
-export declare function assembly_script_get_balance(): u64;
-@external("massa", "assembly_script_get_balance_for")
-export declare function assembly_script_get_balance_for(address: string): u64;
-@external("massa", "assembly_script_get_call_coins")
-export declare function assembly_script_get_call_coins(): u64;
-@external("massa", "assembly_script_hash")
-export declare function assembly_script_hash(data: string): string;
-@external("massa", "assembly_script_signature_verify")
-export declare function assembly_script_signature_verify(data: string, signature: string, public_key: string): bool;
-@external("massa", "assembly_script_address_from_public_key")
-export declare function assembly_script_address_from_public_key(public_key: string): string;
-@external("massa", "assembly_script_get_time")
-export declare function assembly_script_get_time(): u64;
-@external("massa", "assembly_script_unsafe_random")
-export declare function assembly_script_unsafe_random(): i64;
-@external("massa", "assembly_script_send_message")
-export declare function assembly_script_send_message(target_address: string, target_handler: string, validity_start_period: u64, validity_start_thread: u8, validity_end_period: u64, validity_end_thread: u8, max_gas: u64, gas_price: u64, raw_coins: u64, data: string): void;
-@external("massa", "assembly_script_get_current_period")
-export declare function assembly_script_get_current_period(): u64;
-@external("massa", "assembly_script_get_current_thread")
-export declare function assembly_script_get_current_thread(): u8;
-@external("massa", "assembly_script_set_bytecode")
-export declare function assembly_script_set_bytecode(bytecode: string): void
-@external("massa", "assembly_script_set_bytecode_for")
-export declare function assembly_script_set_bytecode_for(address: string, bytecode: string): void
-
+import * as abi from './abi';
+import {Address} from './address';
 
 /**
  * Prints in the node logs
  *
- * @param message Message string
+ * @param {string} message Message string
  */
 export function print(message: string): void {
-    assembly_script_print(message);
+  abi.print(message);
 }
 
 /**
- * Retreive a module in the ledger at the given address and call a function
+ * Calls a remote function located at given address.
  *
- * The function is paramatrized by T the type of the parameters given
+ * Note: arguments serialization is to be handled by the caller and the callee.
  *
- * @param address Address hash in format string
- * @param func Function name exported in the module
- * @param param input parameters as string
- * @param param u64 call coins
- * @returns String output of the function called
+ * @param {Address} at
+ * @param {string} functionName
+ * @param {string} args
+ * @param {u64} coins // TODO define usage
+ *
+ * @return {string} function returned value (serialized)
  */
-export function call(address: string, func: string, param: string, call_coins: u64): string {
-    return assembly_script_call(address, func, param, call_coins);
+export function call(
+  at: Address,
+  functionName: string,
+  args: string,
+  coins: u64,
+): string {
+  return abi.call(at.toByteString(), functionName, args, coins);
 }
 
 /**
+ * Creates a new smart contract.
+ *
  * Take a base64 string representing the module binary and create an entry in
  * the ledger.
  *
  * The context allow you to write in this smart contract while you're executing
  * the current bytecode.
  *
- * @param bytecode string base64 of the ledger
- * @returns Created entry address
+ * @param {string} bytecode - base64 encoded
+ *
+ * @return {string} Smart contract address
  */
-export function create_sc(bytecode: string): string {
-    return assembly_script_create_sc(bytecode);
-}
-
-export namespace Storage {
-    /**
-     * Sets a data entry in the datastore of the current address (top of the call stack).
-     * Existing entries are overwritten and missing ones are created.
-     *
-     * @param key key string
-     * @param value value to set
-     */
-    export function set_data(key: string, value: string): void {
-        assembly_script_set_data(key, value);
-    }
-
-    /**
-     * Sets a data entry in the datastore of a target address (if allowed).
-     * Existing entries are overwritten and missing ones are created.
-     *
-     * @param key key string
-     * @param value value to set
-     */
-    export function set_data_for(address: string, key: string, value: string): void {
-        assembly_script_set_data_for(address, key, value);
-    }
-
-    /**
-     * Returns a data entry from the datastore of the current address (top of the call stack).
-     * Fails if absent.
-     *
-     * @param key key string
-     */
-    export function get_data(key: string): string {
-        return assembly_script_get_data(key);
-    }
-
-    /**
-     * Returns a data entry from the datastore of a target address.
-     * Fails if absent.
-     *
-     * @param key key string
-     */
-    export function get_data_for(address: string, key: string): string {
-        return assembly_script_get_data_for(address, key);
-    }
-
-    /**
-     * Delete an entry from the datastore of the current address (top of the call stack).
-     * Fails if absent.
-     * 
-     * @param key key string
-     */
-    export function delete_data(key: string): void {
-        return assembly_script_delete_data(key);
-    }
-
-    /**
-     * Delete an entry from the datastore of a target address.
-     * Fails if absent.
-     * 
-     * @param address target address
-     * @param key key string
-     */
-    export function delete_data_for(address: string, key: string): void {
-        return assembly_script_delete_data_for(address, key);
-    }
-
-    /**
-     * Append data to a datastore entry of the current address (top of the call stack).
-     * Fails if absent.
-     * 
-     * @param key key string
-     * @param value value to append
-     */
-    export function append_data(key: string, value: string): void {
-        return assembly_script_append_data(key, value);
-    }
-
-    /**
-     * Append data to a datastore entry of a target address.
-     * 
-     * @param address target address
-     * @param key key string
-     * @param value value to append
-     */
-    export function append_data_for(address: string, key: string, value: string): void {
-        return assembly_script_append_data_for(address, key, value);
-    }
-
-    /**
-     * Checks whether an entry exists in the caller's datastore.
-     *
-     * @param key key of the data (will be hashed internally)
-     * @returns true if the key was found, false otherwise
-     */
-    export function has_data(key: string): bool {
-        return assembly_script_has_data(key);
-    }
-
-    /**
-     * Checks whether an entry exists in the datastore of an arbitrary address.
-     *
-     * @param address target address
-     * @param key key of the data (will be hashed internally)
-     * @returns true if the key was found, false otherwise
-     */
-    export function has_data_for(address: string, key: string): bool {
-        return assembly_script_has_data_for(address, key);
-    }
-
-    /**
-     *  Returns an entry from the caller's datastore or a default value if not found
-     *
-     * @param address target address
-     * @param key key of the data (will be hashed internally)
-     * @param default_value default value if not found
-     * @returns found string value or default string
-     */
-    export function get_data_or_default(key: string, default_value: string): string {
-        if (has_data(key)) {
-            return get_data(key);
-        }
-        return default_value;
-    }
-
-    /**
-     *  Returns an entry from an address' datastore or a default value if not found
-     *
-     * @param address target address
-     * @param key key of the data (will be hashed internally)
-     * @param default_value default value if not found
-     * @returns found string value or default string
-     */
-     export function get_data_or_default_for(address: string, key: string, default_value: string): string {
-        if (has_data_for(address, key)) {
-            return get_data_for(address, key);
-        }
-        return default_value;
-    }
-
-    /**
-     *  Sets the executable bytecode of an address.
-     *  Fails if the address doesn't exist of if write access rights are missing.
-     *
-     * @param address target address
-     * @param bytecode base64-encoded bytecode
-     */
-    export function set_bytecode_for(address: string, bytecode: string): void {
-        assembly_script_set_bytecode_for(address, bytecode);
-    }
-
-    /**
-     *  Sets the executable bytecode of the current address (top of the call stack).
-     *  Fails if the address doesn't exist of if write access rights are missing.
-     *
-     * @param bytecode base64-encoded bytecode
-     */
-    export function set_bytecode(bytecode: string): void {
-        assembly_script_set_bytecode(bytecode);
-    }
-}
-
-export namespace Context {
-    /**
-     * Get context current owned addresses.
-     *
-     * You can check your own address or check the addresses of the smart contract you've created during the current execution.
-     *
-     * @returns JSON formated list of addresses containing the owned addresses
-     */
-    export function get_owned_addresses(): string {
-        return assembly_script_get_owned_addresses();
-    }
-
-    /**
-     * Get context current call stack
-     *
-     * The call stack is stack of called module. You can look all previous \
-     * addresses since the address of the operation sender.
-     *
-     * @returns JSON formated list of addresses containing the call stack
-     */
-    export function get_call_stack(): string[] {
-        return (<JSON.Arr>(JSON.parse(assembly_script_get_call_stack()))).valueOf().map<string>(x => x.toString());
-    }
-
-    /**
-     * Get context current caller address.
-     *
-     * @returns addresse of the caller
-     */
-    export function get_caller(): string {
-        const addresses = get_call_stack();
-        return addresses[addresses.length - 2].toString();
-    }
-
-    /**
-     * Get context current transaction creator address.
-     *
-     * @returns address of the transaction creator
-     */
-    export function get_tx_creator(): string {
-        const addresses = get_call_stack();
-        return addresses[0].toString();
-    }
-
-    /**
-    * Gets the amount of coins transferred in the current call
-    *
-    * @returns Raw amount of coins (in elementary nits)
-    */
-    export function get_call_coins(): u64 {
-        return assembly_script_get_call_coins();
-    }
-
-    /**
-     * Gets the slot unix timestamp in milliseconds
-     *
-     * @returns unix timestamp in milliseconds
-     */
-    export function get_time(): u64 {
-        return assembly_script_get_time();
-    }
-
-    /**
-     * Return the remaining gas available
-     * @returns Gas available
-     */
-    export function get_remaining_gas(): u64 {
-        return assembly_script_get_remaining_gas();
-    }
+export function createSC(bytecode: string): Address {
+  return Address.fromByteString(abi.createSC(bytecode));
 }
 
 /**
  * Generates an event
  *
- * @param message String version of the event
+ * @param {string} event - stringified
  */
-export function generate_event(event: string): void {
-    assembly_script_generate_event(event);
+export function generateEvent(event: string): void {
+  abi.generateEvent(event);
 }
 
 /**
- * Transfer SCE coins from the current address to to_address
+ * Transfers SCE coins from the current address to given address.
  *
- * @param to_address Destination address hash in format string
- * @param raw_amount Raw amount (in elementary units)
+ * @param {Address} to
+ * @param {u64} amount - value in the smallest unit.
  */
-export function transfer_coins(to_address: string, raw_amount: u64): void {
-    assembly_script_transfer_coins(to_address, raw_amount);
+export function transferCoins(to: Address, amount: u64): void {
+  abi.transferCoins(to.toByteString(), amount);
 }
 
 /**
- * Transfer SCE coins from from_address to to_address
+ * Transfers SCE coins of the `from` address to the `to` address.
  *
- * @param from_address Source address hash in format string
- * @param to_address Destination address hash in format string
- * @param raw_amount Raw amount (in elementary units)
+ * @param {Address} from
+ * @param {Address} to
+ * @param {u64} amount - value in the smallest unit.
  */
-export function transfer_coins_for(from_address: string, to_address: string, raw_amount: u64): void {
-    assembly_script_transfer_coins_for(from_address, to_address, raw_amount);
+export function transferCoinsOf(from: Address, to: Address, amount: u64): void {
+  abi.transferCoinsOf(from.toByteString(), to.toByteString(), amount);
 }
 
 /**
  * Gets the balance of the current address
  *
- * @returns The raw balance of the address (in elementary nits)
+ * @return {u64} - value in the smallest unit.
  */
-export function get_balance(): u64 {
-    return assembly_script_get_balance();
+export function balance(): u64 {
+  return abi.balance();
 }
 
 /**
- * Gets the balance of the specified address
+ * Gets the balance of the specified address.
  *
- * @param address Address hash in format string
- * @returns The raw balance of the address (in elementary nits)
+ * @param {string} address
+ *
+ * @return {u64} - value in the smallest unit.
  */
-export function get_balance_for(address: string): u64 {
-    return assembly_script_get_balance_for(address);
+export function balanceOf(address: string): u64 {
+  return abi.balanceOf(address);
 }
 
 /**
- * Hash data and return the base58-encoded hash
+ * Converts data to base58.
  *
- * @param data Data to hash
+ * @param {string} data
+ *
+ * @return {string}
  */
-export function hash(data: string): string {
-    return assembly_script_hash(data);
+export function toBase58(data: string): string {
+  return abi.toBase58(data);
 }
 
 /**
- * Hash data and return the base58-encoded hash
+ * Tests if the signature is valid.
  *
- * @param data Data that was signed
- * @param signature base58check signature
- * @param public_key base58check public key
- * @returns true if verification suceeded, false otherwise
+ * @param {string} publicKey - base58check encoded
+ * @param {string} digest
+ * @param {string} signature - base58check encoded
+
+ * @return {bool}
  */
-export function signature_verify(data: string, signature: string, public_key: string): bool {
-    return assembly_script_signature_verify(data, signature, public_key);
+export function isSignatureValid(
+  publicKey: string,
+  digest: string,
+  signature: string,
+): bool {
+  return abi.isSignatureValid(digest, signature, publicKey);
 }
 
 /**
  * Converts a public key to an address
  *
- * @param public_key Base58check public key
- * @returns the resulting address
+ * @param {string} pubKey -  Base58check endoded
+ *
+ * @return {Address}
  */
-export function address_from_public_key(data: string): string {
-    return assembly_script_address_from_public_key(data);
+export function publicKeyToAddress(pubKey: string): Address {
+  return Address.fromByteString(abi.publicKeyToAddress(pubKey));
 }
 
 /**
- * Gets an unsafe random i64 (all bits random)
- * This function is unsafe because the random draws can be predicted and manipulated by attackers.
+ * Returns an unsafe random.
  *
- * @returns random signed 64bit integer
+ * /!\ This function is unsafe because the random draws is predictable.
+ *
+ * @return {i64}
  */
-export function unsafe_random(): i64 {
-    return assembly_script_unsafe_random();
+export function unsafeRandom(): i64 {
+  return abi.unsafeRandom();
 }
 
 /**
- * Sends an async message
+ * Sends an async message to a function at given address.
  *
- * @param target_address Destination address hash in format string
- * @param target_handler Name of the message handling function
- * @param validity_start_period Period of the validity start slot
- * @param validity_start_thread Thread of the validity start slot
- * @param validity_end_period Period of the validity end slot
- * @param validity_end_thread Thread of the validity end slot
- * @param max_gas Maximum gas for the message execution
- * @param gas_price Price of one gas unit
- * @param coins Coins of the sender
- * @param data Message data
- * @returns Nothing
+ * Note: serialization is to be handled at the caller and the callee level.
+ *
+ * @param {string} at
+ * @param {string} functionName
+ * @param {u64} validityStartPeriod - Period of the validity start slot
+ * @param {u8} validityStartThread - Thread of the validity start slot
+ * @param {u64} validityEndPeriod - Period of the validity end slot
+ * @param {u8} validityEndThread - Thread of the validity end slot
+ * @param {u64} maxGas - Maximum gas for the message execution
+ * @param {u64} gasPrice - Price of one gas unit
+ * @param {u64} coins - Coins of the sender
+ * @param {string} msg - serialized data
  */
-export function send_message(target_address: string, target_handler: string, validity_start_period: u64, validity_start_thread: u8, validity_end_period: u64, validity_end_thread: u8, max_gas: u64, gas_price: u64, raw_coins: u64, data: string): void {
-    assembly_script_send_message(target_address, target_handler, validity_start_period, validity_start_thread, validity_end_period, validity_end_thread, max_gas, gas_price, raw_coins, data);
+export function sendMessage(
+  at: Address,
+  functionName: string,
+  validityStartPeriod: u64,
+  validityStartThread: u8,
+  validityEndPeriod: u64,
+  validityEndThread: u8,
+  maxGas: u64,
+  gasPrice: u64,
+  coins: u64,
+  msg: string,
+): void {
+  abi.sendMessage(
+    at.toByteString(),
+    functionName,
+    validityStartPeriod,
+    validityStartThread,
+    validityEndPeriod,
+    validityEndThread,
+    maxGas,
+    gasPrice,
+    coins,
+    msg,
+  );
 }
 
 /**
- * Empty function that can be replaced before the compilation with
- * include_base64.js.
+ * Convert given file content to base64.
  *
- * ```bash
- * node massa_tools/include_base64.js assembly/create_sc.ts && asc assembly/create_sc.m.ts --target release --exportRuntime
- * ```
- * @param _path
+ * Note: this function shall never be called but is dynamically
+ * replace using base64 transformer.
+ * More info here:
+ *
+ * @param {string} filePath
+ *
+ * @return {string}
  */
-export function include_base64(_path: string): string {
-    abort('Please use massa tool *include_base64* compilation')
-    return "/!\ NOT IMPLEMENTED HERE";
+export function fileToBase64(
+  filePath: string, // eslint-disable-line @typescript-eslint/no-unused-vars
+): string {
+  abort('Please use base64 transformer to dynamically include the file.');
+  return '';
 }
 
 /**
- * Retrieves the current period
- *
+ * Returns the current period
+ * @return {u8}
  */
-export function get_current_period(): u64 {
-    return assembly_script_get_current_period();
+export function currentPeriod(): u64 {
+  return abi.currentPeriod();
 }
 
 /**
- * Retrieves the current thread
- *
+ * Returns the current thread
+ * @return {u8}
  */
-export function get_current_thread(): u8 {
-    return assembly_script_get_current_thread();
+export function currentThread(): u8 {
+  return abi.currentThread();
 }
