@@ -1,5 +1,9 @@
 import * as abi from './abi';
 import {Address} from './address';
+import * as Storage from './storage';
+import * as Context from './context';
+
+export {Address, Storage, Context};
 
 /**
  * Prints in the node logs
