@@ -1,4 +1,4 @@
-import {Valider, ByteArray} from 'mscl-type';
+import {Valider, ByteArray} from 'mscl-type/assembly/index';
 
 /**
  * A Massa's blockchain address.
