@@ -20,57 +20,57 @@ export declare function createSC(bytecode: string): string
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_set_data")
-export declare function setItem(
+export declare function set(
     key: string,
     value: string): void;
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_set_data_for")
-export declare function setItemOf(
+export declare function setOf(
     address: string,
     key: string,
     value: string): void;
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_get_data")
-export declare function getItem(key: string): string;
+export declare function get(key: string): string;
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_get_data_for")
-export declare function getItemOf(
+export declare function getOf(
     address: string,
     key: string): string;
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_delete_data")
-export declare function deleteItem(key: string): void
+export declare function delete (key: string): void
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_delete_data_for")
-export declare function deleteItemOf(
+export declare function deleteOf(
     address: string,
     key: string): void
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_append_data")
-export declare function appendItem(
+export declare function append(
     key: string,
     value: string): void
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_append_data_for")
-export declare function appendItemOf(
+export declare function appendOf(
     address: string,
     key: string,
     value: string): void
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_has_data")
-export declare function hasItem(key: string): bool;
+export declare function has(key: string): bool;
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_has_data_for")
-export declare function hasItemOf(
+export declare function hasOf(
     address: string,
     key: string): bool;
 

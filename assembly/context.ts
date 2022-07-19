@@ -1,5 +1,5 @@
 import * as abi from './abi';
-import {Address} from './address';
+import { Address } from './address';
 
 /**
  * Returns an array of addresses.
@@ -53,7 +53,7 @@ export function addressStack(): Array<Address> {
  */
 export function caller(): Address {
   const a = addressStack();
-  return a[a.length - 2];
+  return a.length < 2 ? new Address('', false) : a[a.length - 2];
 }
 
 /**

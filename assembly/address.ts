@@ -1,4 +1,4 @@
-import {Valider, ByteArray} from 'mscl-type/assembly/index';
+import { Valider, ByteArray } from 'mscl-type';
 
 /**
  * A Massa's blockchain address.
@@ -6,22 +6,28 @@ import {Valider, ByteArray} from 'mscl-type/assembly/index';
  */
 export class Address implements Valider {
   _value: string;
+  _isValid: bool;
 
   /**
      * Creates a new Address;
      *
      * @param {string} bs - Byte string.
+     * @param {bool} isValid - default true
      */
-  constructor(bs: string = '') {
+  constructor(bs: string = '', isValid: bool = true) {
     this._value = bs;
+    this._isValid = isValid;
   }
 
   /**
      * Returns if the Address is still valid.
+     *
+     * see https://github.com/massalabs/massa-sc-runtime/issues/142
+     *
      * @return {bool}
      */
   isValid(): bool {
-    return this._value.startsWith('A');
+    return this._isValid;
   }
 
   /**
@@ -96,25 +102,25 @@ export class Address implements Valider {
     return ByteArray.fromByteString(this._value);
   }
 
-    /**
-     * Tests if two adresses are identical.
-     *
-     * @param {Address} other
-     * @return {boolean}
-     */
-    @operator('==')
+  /**
+   * Tests if two adresses are identical.
+   *
+   * @param {Address} other
+   * @return {boolean}
+   */
+  @operator('==')
   equals(other: Address): boolean {
     return this._value == other.toByteString();
   }
 
-    /**
-     * Tests if two addresses are different.
-     *
-     * @param {Address} other
-     * @return {boolean}
-     */
-    @operator('!=')
-    notEqual(other: Address): boolean {
-      return !(this == other);
-    }
+  /**
+   * Tests if two addresses are different.
+   *
+   * @param {Address} other
+   * @return {boolean}
+   */
+  @operator('!=')
+  notEqual(other: Address): boolean {
+    return !(this == other);
+  }
 }

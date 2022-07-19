@@ -1,5 +1,5 @@
 import * as abi from './abi';
-import {Address} from './address';
+import { Address } from './address';
 
 /**
  * Sets (key, value) in the datastore of the callee's address.
@@ -9,8 +9,8 @@ import {Address} from './address';
  * @param {string} key
  * @param {string} value
  */
-export function setItem(key: string, value: string): void {
-  abi.setItem(key, value);
+export function set(key: string, value: string): void {
+  abi.set(key, value);
 }
 
 /**
@@ -23,8 +23,8 @@ export function setItem(key: string, value: string): void {
  * @param {string} key
  * @param {string} value
  */
-export function setItemOf(address: Address, key: string, value: string): void {
-  abi.setItemOf(address.toByteString(), key, value);
+export function setOf(address: Address, key: string, value: string): void {
+  abi.setOf(address.toByteString(), key, value);
 }
 
 /**
@@ -36,8 +36,8 @@ export function setItemOf(address: Address, key: string, value: string): void {
  *
  * @return {string}
  */
-export function getItem(key: string): string {
-  return abi.getItem(key);
+export function get(key: string): string {
+  return abi.get(key);
 }
 
 /**
@@ -50,8 +50,8 @@ export function getItem(key: string): string {
  *
  * @return {string}
  */
-export function getItemOf(address: Address, key: string): string {
-  return abi.getItemOf(address.toByteString(), key);
+export function getOf(address: Address, key: string): string {
+  return abi.getOf(address.toByteString(), key);
 }
 
 /**
@@ -62,8 +62,8 @@ export function getItemOf(address: Address, key: string): string {
  *
  * @param {string} key
  */
-export function deleteItem(key: string): void {
-  abi.deleteItem(key);
+export function delete (key: string): void {
+  abi.delete(key);
 }
 
 /**
@@ -75,8 +75,8 @@ export function deleteItem(key: string): void {
  * @param {Address} address
  * @param {string} key
  */
-export function deleteItemOf(address: Address, key: string): void {
-  abi.deleteItemOf(address.toByteString(), key);
+export function deleteOf(address: Address, key: string): void {
+  abi.deleteOf(address.toByteString(), key);
 }
 
 /**
@@ -88,8 +88,8 @@ export function deleteItemOf(address: Address, key: string): void {
  * @param {string} key
  * @param {string} value
  */
-export function appendItem(key: string, value: string): void {
-  abi.appendItem(key, value);
+export function append(key: string, value: string): void {
+  abi.append(key, value);
 }
 
 /**
@@ -103,12 +103,12 @@ export function appendItem(key: string, value: string): void {
  * @param {string} key key string
  * @param {string} value value to append
  */
-export function appendItemOf(
+export function appendOf(
   address: Address,
   key: string,
   value: string,
 ): void {
-  abi.appendItemOf(address.toByteString(), key, value);
+  abi.appendOf(address.toByteString(), key, value);
 }
 
 /**
@@ -118,8 +118,8 @@ export function appendItemOf(
  * @param {string} key
  * @return {bool}
  */
-export function hasItem(key: string): bool {
-  return abi.hasItem(key);
+export function has(key: string): bool {
+  return abi.has(key);
 }
 
 /**
@@ -131,8 +131,8 @@ export function hasItem(key: string): bool {
  *
  * @return {bool}
  */
-export function hasItemOf(address: Address, key: string): bool {
-  return abi.hasItemOf(address.toByteString(), key);
+export function hasOf(address: Address, key: string): bool {
+  return abi.hasOf(address.toByteString(), key);
 }
 
 /**
