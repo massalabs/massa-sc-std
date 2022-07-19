@@ -43,7 +43,7 @@ export declare function getOf(
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_delete_data")
-export declare function delete (key: string): void
+export declare function del(key: string): void
 
 // @ts-ignore: decorators are not valid here
 @external("massa", "assembly_script_delete_data_for")

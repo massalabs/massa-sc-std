@@ -62,8 +62,8 @@ export function getOf(address: Address, key: string): string {
  *
  * @param {string} key
  */
-export function delete (key: string): void {
-  abi.delete(key);
+export function del(key: string): void {
+  abi.del(key);
 }
 
 /**
