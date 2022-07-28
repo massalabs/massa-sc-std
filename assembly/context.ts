@@ -13,7 +13,7 @@ function json2Address(str: string): Array<Address> {
 
   const a = str.split(',');
   return a.map<Address>((x) =>
-    Address.fromByteString(x.substring(1, x.length - 2)),
+    Address.fromByteString(x.substring(1, x.length - 1)),
   );
 }
 
